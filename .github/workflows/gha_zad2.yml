@@ -54,7 +54,7 @@ jobs:
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache 
           cache-to: |
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache ,mode=max  
-          outputs: type=oci,dest=/tmp/my-app.tar
+          outputs: type=docker,dest=/tmp/my-app.tar
           tags: ${{ steps.meta.outputs.tags }}
       
       - 
