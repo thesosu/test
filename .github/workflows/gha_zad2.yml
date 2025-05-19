@@ -1,4 +1,4 @@
-name: GHAction zad2
+name: GHAction zad2 
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ jobs:
   ci_step:
     name: Build, tag and push Docker image to DockerHub
     runs-on: ubuntu-latest
-    
+      
     steps:
       - 
         name: Check out the source_repo
@@ -48,22 +48,22 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64 
           push: false
-          load: true
+          load: true 
           cache-from: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache 
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache
           cache-to: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache ,mode=max  
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-      
-      - 
-        name: Scan first Docker image
+
+      - name: Scan first image
         uses: aquasecurity/trivy-action@0.19.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
+          exit-code: 1
           severity: CRITICAL,HIGH
-          exit-code: 1 
+        
 
       - 
         name: Build second Docker image
@@ -71,28 +71,26 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/arm64
+          platforms: linux/arm64 
           push: false
-          load: true
+          load: true 
           cache-from: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache 
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache
           cache-to: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache ,mode=max  
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-      
-      - 
-        name: Scan second Docker image
+
+      - name: Scan second image
         uses: aquasecurity/trivy-action@0.19.0
         with:
           image-ref: ${{ steps.meta.outputs.tags }}
+          exit-code: 1
           severity: CRITICAL,HIGH
-          exit-code: 1 
           
-      
 
-      - 
-        name: Push Docker image
-        if: success() 
+
+      - name: Build and push Docker image
+        if: success()
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -102,7 +100,5 @@ jobs:
           cache-from: |
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache
           cache-to: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max  
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max
           tags: ${{ steps.meta.outputs.tags }}
-      
-
