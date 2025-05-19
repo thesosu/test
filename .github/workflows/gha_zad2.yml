@@ -8,7 +8,7 @@ on:
 
 jobs:
   ci_step:
-    name: Build, tag and push Docker image to DockerHub
+    name: Build, scan, and push Docker image to DockerHub
     runs-on: ubuntu-latest
     
     steps:
@@ -16,7 +16,7 @@ jobs:
         name: Check out the source_repo
         uses: actions/checkout@v4
       
-      -
+      - 
         name: Docker metadata definitions
         id: meta
         uses: docker/metadata-action@v5
@@ -54,22 +54,26 @@ jobs:
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache 
           cache-to: |
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache ,mode=max  
-          outputs: type=docker,dest=/tmp/my-app.tar
           tags: ${{ steps.meta.outputs.tags }}
       
       - 
-        name: Install Trivy
-        uses: aquasecurity/trivy-action@0.20.0
-        with:
-          scan-type: filesystem
-          input: /tmp/my-app.tar 
-          severity: CRITICAL,HIGH
-          exit-code: 1 
-          format: table
+        name: Docker Scout scan for vulnerabilities
+        id: scout-scan
+        run: |
+          docker scout quickview ${{ vars.DOCKERHUB_USERNAME }}/my-app:latest \
+            --format json > scout-report.json
+          CRITICAL_COUNT=$(jq '.summary.critical' scout-report.json)
+          HIGH_COUNT=$(jq '.summary.high' scout-report.json)
+          if [ "$CRITICAL_COUNT" -gt 0 ] || [ "$HIGH_COUNT" -gt 0 ]; then
+            echo "Found critical or high vulnerabilities."
+            echo "::error file=scout-report.json::Scan failed with $CRITICAL_COUNT critical and $HIGH_COUNT high vulnerabilities."
+            exit 1
+          else
+            echo "No critical or high vulnerabilities found."
+          fi
       
-
       - 
-        name: Push Docker image
+        name: Push Docker image to DockerHub
         if: success() 
         uses: docker/build-push-action@v5
         with:
@@ -82,5 +86,3 @@ jobs:
           cache-to: |
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max  
           tags: ${{ steps.meta.outputs.tags }}
-      
-
