@@ -1,0 +1,17 @@
+{
+    "name": "pogoda-app",
+    "description": "Aplikacja pogodowa",
+    "main": "app.js",
+    "keywords": [
+        "express",
+        "serwer"
+    ],
+    "author": "Przemek Kłos",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "axios": "^1.8.4",
+        "express": "^5.1.0"
+    }
+}

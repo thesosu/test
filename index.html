@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prognoza Pogody</title>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      const citiesByCountry = {
+        "Polska": ["Warszawa", "Kraków", "Gdańsk"],
+        "USA": ["Nowy Jork", "Los Angeles", "Chicago"],
+        "Japonia": ["Tokio", "Osaka", "Kioto"]
+      };
+
+      function updateCities() {
+        const countrySelect = document.getElementById("country");
+        const citySelect = document.getElementById("city");
+        
+        
+        const selectedCountry = countrySelect.value;
+
+      
+        citySelect.innerHTML = "";
+
+        
+        citiesByCountry[selectedCountry].forEach(city => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+      }
+
+      
+      const countrySelect = document.getElementById("country");
+      countrySelect.addEventListener("change", updateCities);
+      updateCities();
+    });
+  </script>
+</head>
+<body>
+  <h1>Wybierz kraj i miasto</h1>
+  <form action="/pogoda" method="post">
+    <label for="country">Wybierz kraj:</label>
+    <select name="country" id="country">
+      <option value="Polska">Polska</option>
+      <option value="USA">USA</option>
+      <option value="Japonia">Japonia</option>
+    </select>
+    <br>
+    <label for="city">Wybierz miasto:</label>
+    <select name="city" id="city">
+      
+    </select>
+    <br>
+    <button type="submit">Sprawdź pogodę</button>
+  </form>
+</body>
+</html>
