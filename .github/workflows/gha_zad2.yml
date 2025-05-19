@@ -59,7 +59,7 @@ jobs:
       
       - 
         name: Install Trivy
-        uses: aquasecurity/trivy-action@v0.11.0
+        uses: aquasecurity/trivy-action@latest
         with:
           scan-type: filesystem
           input: /tmp/my-app.tar 
