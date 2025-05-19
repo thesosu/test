@@ -16,7 +16,7 @@ jobs:
         name: Check out the source_repo
         uses: actions/checkout@v4
       
-      -
+      - 
         name: Docker metadata definitions
         id: meta
         uses: docker/metadata-action@v5
@@ -51,26 +51,25 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: false
           cache-from: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache 
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache
           cache-to: |
-            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache ,mode=max  
-          outputs: type=docker,dest=/tmp/my-app.tar
+            type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max
           tags: ${{ steps.meta.outputs.tags }}
       
       - 
         name: Install Trivy
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: filesystem
-          input: /tmp/my-app.tar 
+          scan-type: image
+          input: ${{ vars.DOCKERHUB_USERNAME }}/my-app:latest
           severity: CRITICAL,HIGH
-          exit-code: 1 
+          exit-code: 1
           format: table
       
 
       - 
         name: Push Docker image
-        if: success() 
+        if: success()
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -82,5 +81,3 @@ jobs:
           cache-to: |
             type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/my-app:cache,mode=max  
           tags: ${{ steps.meta.outputs.tags }}
-      
-
