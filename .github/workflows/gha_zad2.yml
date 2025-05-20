@@ -41,6 +41,17 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Set image tag for scanning
+        id: set_tag
+        run: |
+          T=$(echo '${{ steps.meta.outputs.tags }}' | tr ' ' '\n' | grep -v ':sha' | head -n1)
+          if [ -z "$T" ]; then
+            T=$(echo '${{ steps.meta.outputs.tags }}' | tr ' ' '\n' | grep ':sha' | head -n1)
+          fi
+          echo "TAG=$T" >> $GITHUB_OUTPUT
+
+
 
       - 
         name: Build first Docker image
@@ -60,7 +71,7 @@ jobs:
       - name: Scan first image
         uses: aquasecurity/trivy-action@0.19.0
         with:
-          image-ref: ${{ steps.meta.outputs.tags }}
+          image-ref: ${{ steps.set_tag.outputs.TAG }}
           exit-code: 1
           severity: CRITICAL,HIGH
         
@@ -83,7 +94,7 @@ jobs:
       - name: Scan second image
         uses: aquasecurity/trivy-action@0.19.0
         with:
-          image-ref: ${{ steps.meta.outputs.tags }}
+          image-ref: ${{ steps.set_tag.outputs.TAG }}
           exit-code: 1
           severity: CRITICAL,HIGH
           
