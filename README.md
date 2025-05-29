@@ -14,7 +14,7 @@ Opracowany łańcuch (pipeline) w usłudzie GitHub Actions zawiera kolejno:
   9. Skanowanie obrazu linux/amd64: Wykrywanie podatności (CRITICAL, HIGH) przy użyciu aquasecurity/trivy-action@0.19.0.
   10. Budowa obrazu dla linux/arm64: Analogiczne jak dla linux/amd64.
   11. Skanowanie obrazu linux/arm64: Podobnie jak dla amd64.
-  12. Budowa i wypchnięcie obrazu wieloarchitektonicznego.
+  12. Budowa i wypchnięcie obrazu wieloarchitektonicznego gdy skanowanie zakończone sukcesem.
 
 
 Potwierdzenie poprawnego działania na DockerHub:
